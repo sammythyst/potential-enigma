@@ -1,5 +1,7 @@
 // TODO: Include packages needed for this application
 const inquirer = require('inquirer')
+const fs = require('fs');
+const markDown = require('./utils/generateMarkdown.js')
 
 
 // TODO: Create an array of questions for user input
@@ -39,6 +41,9 @@ const questions = [
         name: 'license',
         message: 'Which license did you use?',
         choices: ['MIT', 'Apache', 'ISC'],
+        filter(val) {
+            return val.toLowerCase();
+        }
     },
     {
         type: 'input',
@@ -48,7 +53,7 @@ const questions = [
     {
         type: 'input',
         name: 'github',
-        message: 'For questions, where can people find your github account?'
+        message: 'For questions, where can people find your github account? (in format of "github.com/username")'
     }
 ];
 
@@ -58,9 +63,11 @@ function writeToFile(fileName, data) {}
 // TODO: Create a function to initialize app
 function init() {
     return inquirer.prompt(questions)
-    .then((answers) => {
-        console.log(answers)
-        return answers
+    .then((data) => {
+        const answers = markDown(data)
+        fs.writeFile('README.md', answers, (err) => {
+            err ? console.error(err) : console.log('Success!');
+        });
     })
     .catch((error) => {
         console.log(error)
